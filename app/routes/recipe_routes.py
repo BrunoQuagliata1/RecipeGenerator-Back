@@ -13,7 +13,7 @@ recipe_bp = Blueprint('recipe_bp', __name__)
 @recipe_bp.route('/recipe', methods=['GET'])
 def get_recipe():
     food_name = request.args.get('name')
-    tag_names = request.args.get('tags')  # Tags are expected to be comma-separated
+    tag_names = request.args.get('tags') 
 
     query = Recipe.query
 
@@ -21,8 +21,7 @@ def get_recipe():
         query = query.filter(Recipe.name.ilike(f"%{food_name}%"))
 
     if tag_names:
-        tags_list = [tag.strip() for tag in tag_names.split(',')]  # Ensure tags are stripped of whitespace
-        # Join with Tag and count the number of matches for each Recipe
+        tags_list = [tag.strip() for tag in tag_names.split(',')]
         query = query.join(Recipe.tags).filter(Tag.name.in_(tags_list))
         query = query.group_by(Recipe.id).having(func.count(distinct(Tag.id)) == len(tags_list))
 
@@ -32,7 +31,7 @@ def get_recipe():
         data = [{
             "name": recipe.name,
             "ingredients": recipe.ingredients,
-            "steps": recipe.steps,  # Assuming you might also want to include steps
+            "steps": recipe.steps,
             "tags": [tag.name for tag in recipe.tags]
         } for recipe in recipes]
         return jsonify(data)
